@@ -2,32 +2,35 @@ const snackModel = require('../models/snack.js')
 
 
 //CREATE
-function create(req, res, next) {
+function create(req, res, next){
   const newSnack = snackModel.create(req.body)
 
-  if (newSnack.error) return next({
-    status: 400,
-    message: newSnack
-  })
-
-  res.status(201).send({
-    data: newSnack
-  })
+  if(newSnack.error) return next( { status: 400, message: newSnack })
+  
+  res.status(201).send({ data: newSnack })
 }
 
 //GET ALL 
-
 function getAll(req, res, next) {
-  const snacks = snackModel.getAll()
-
-  res.send({
-    data: snacks
+  const id = req.params.id
+  const data = snackModel.getAll(id)
+  let result = []
+  
+  if (result.errors) {
+    return next({
+      status: 400,
+      message: `Could not find snacks`,
+      errors: result.errors
+    })
+  }
+  res.status(200).json({
+    data
   })
 }
 
 //GET ONE
 function getOne(req, res, next) {
-  const snack = notesModel.getOne(req.params.id)
+  const snack = snackModel.getOne(req.params.id)
 
   if(!snack) return next({status: 404, message: snack })
 
@@ -36,16 +39,20 @@ function getOne(req, res, next) {
 
 //UPDATE
 function update(req, res, next) {
-  const id = req.params.id
-  const result = snackModel.update(id, req.body)
+const id = req.params.id  
+const name = req.body.name
+const result = snackModel.update(id, req.body)
 
-  if (result.error) {
+  if(result.errors) {
     return next({
       status: 404,
-      message: `Could not update snack with id of ${id} `
+      message: `Could not update book`,
+      errors: result.errors
     })
-
   }
+  res.status(200).json({
+    data: result
+  })
 }
 
 //DELETE
@@ -57,7 +64,6 @@ function remove(req, res, next) {
     status: 404,
     message: snack
   })
-
   res.status(200).send(snack)
 }
 

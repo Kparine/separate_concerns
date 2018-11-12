@@ -8,24 +8,20 @@ app.use(bodyParser.json())
 app.use(morgan('dev'))
 
 const snackRoutes = require('../src/routes/snacks.js')
-app.use('/snacks.js', snackRoutes)
-
-app.use(function(req, res, next) {
-  next( { status: 404, message: { error: 'Not Found'}} )
-})
+app.use('/snacks', snackRoutes)
 
 //ERROR HANDLER
-app.use(function(err, req, res, next){
-  const error = {}
-
-  error.message = err.message || "Internal Server Error"
-  error.status = err.status || 500
-  error.stack = err.stack
-
-  res.status(error.status).send(error)
+app.use((err, req, res, next) => {
+  console.error(err)
+  const status = err.status || 500
+  res.status(status).json({ error: err })
 })
 
-app.listen(port, function(){
+app.use((req, res, next) => {
+  res.status(404).json({ error: { message: 'Not found' }})
+})
+
+app.listen(port, function () {
   console.log(`Howdy from port ${port}`)
 })
 
