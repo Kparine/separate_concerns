@@ -39,9 +39,11 @@ function getOne(req, res, next) {
 
 //UPDATE
 function update(req, res, next) {
-const id = req.params.id  
-const name = req.body.name
-const result = snackModel.update(id, req.body)
+  // make sure your tabbing is consistent
+  const id = req.params.id
+  // remove any unused varibles  
+  const name = req.body.name
+  const result = snackModel.update(id, req.body)
 
   if(result.errors) {
     return next({
